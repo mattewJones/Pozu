@@ -32,11 +32,11 @@ for n = 1:nbIm
         currClassNumber=currClassNumber+1;
         currClassName=nom_classe{n};
     end
-    classNumber(n)=currClassNumber;
+    classNumber(n)=currClassNumber; %numéro de la classe (attribué selon l'ordre de parcours de la bdd)
 end
 
 
-%% calcul des stats pour chaque classe
+%% histogrammes de teinte (pour chaque image)
 
 
 for c=unique(classNumber)
@@ -46,10 +46,10 @@ for c=unique(classNumber)
     for n=sampleIndices
         img = imread([list(n).folder '\' list(n).name]);
         imgHSV=rgb2hsv(img);
-        imgH=imgHSV(:,:,1);
+        hues=imgHSV(:,:,1);
         figure();
         histogram(hues(:));
-        title(sprintf('teintes classe %d : %s',c,nom_classe{n}))
+        title(sprintf('teintes image %d : %s, classe %d : %s',n,nom{n},c,nom_classe{n}),"interpreter","none")
     end
 
 end
