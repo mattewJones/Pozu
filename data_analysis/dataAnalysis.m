@@ -16,8 +16,8 @@ clc;  clear all; close all;
 %% détermination de la classe de chaque image
 
 
-rep='..\DATABASE\';
-list=dir([rep '*.jpg']);
+repImgContent='..\DB_NO_BKGND\';
+list=dir([repImgContent '*.jpg']);
 nbIm=numel(list);
 
 currClassNumber=0;
@@ -35,24 +35,59 @@ for n = 1:nbIm
     classNumber(n)=currClassNumber; %numéro de la classe (attribué selon l'ordre de parcours de la bdd)
 end
 
+nbClasses=currClassNumber; %nombre total de classes
+
+% chargement des masques
+repMasks='..\FOREGROUND_MASKS\';
+listMasks=dir([repMasks '*.jpg']);
 
 %% histogrammes de teinte (pour chaque image)
 
 
-for c=unique(classNumber)
+for c=1:nbClasses
     sampleIndices=find(classNumber==c);
     hues=zeros(0,1);
     % parcours des images de la classe c
     for n=sampleIndices
         img = imread([list(n).folder '\' list(n).name]);
+        msk = imread([listMasks(n).folder '\' listMasks(n).name]);
+        %figure();
+        %imshow(img);colorbar();
+        %figure();
+        %imshow(msk);colorbar();
         imgHSV=rgb2hsv(img);
         hues=imgHSV(:,:,1);
         figure();
-        histogram(hues(:));
+        A=hues(msk==max(msk(:)));
+        histogram(A(:));
         title(sprintf('teintes image %d : %s, classe %d : %s',n,nom{n},c,nom_classe{n}),"interpreter","none")
     end
 
 end
 
 
+%% boites à moustaches de la teinte pour chaque classe
 
+%figure();
+%Ndisp=ceil(sqrt(nbClasses));
+
+for c=1:nbClasses
+    sampleIndices=find(classNumber==c);
+    hues=zeros(0,1);
+    hueTotalData=[];
+    groupVar=[];
+    % parcours des images de la classe c
+    for n=sampleIndices
+        img = imread([list(n).folder '\' list(n).name]);
+        msk = imread([listMasks(n).folder '\' listMasks(n).name]);
+        imgHSV=rgb2hsv(img);
+        hues=imgHSV(:,:,1);
+        A=hues(msk==max(msk(:)));
+        hueTotalData=[hueTotalData;A];
+        groupVar=[groupVar; repmat({nom{n}},size(A,1),1)];
+    end
+    figure();
+    boxplot(hueTotalData,groupVar)
+    title(sprintf('classe %d : %s',c,nom_classe{n}),"interpreter","none")
+
+end

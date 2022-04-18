@@ -12,25 +12,26 @@ imgmoy=zeros(size1);
 for i=1:nbIm
     rep=[list(i).folder '\' list(i).name];
     img=double(loadImageProperly(rep));
-    figure();
-    imshow(uint8(img),[])
+    % figure();
+    % imshow(uint8(img),[])
     imgR=imresize(img,size1);
     imgmoy=imgmoy+imgR;
 
 end
 
-imgmoy=uint8(imgmoy/nbIm);
+imgmoy=imgmoy/nbIm;
 figure();
 imshow(imgmoy,[]);
 
 
 %%
-x=uint8(imgR)-imgmoy;
+i=8;
+img=double(loadImageProperly([list(i).folder '\' list(i).name]));
+imgR=imresize(img,size1);
+x=uint8(abs(imgR-imgmoy));
 figure();
 imshow(x,[]);
 
-
-%%
 
 xHSV=rgb2hsv(x);
 Intens=xHSV(:,:,3);
