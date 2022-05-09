@@ -42,11 +42,12 @@ repMasks='..\FOREGROUND_MASKS\';
 listMasks=dir([repMasks '*.jpg']);
 
 %% histogrammes de teinte (pour chaque image)
-
+% ils sont enregistrés dans histData
 
 for c=1:nbClasses
     sampleIndices=find(classNumber==c);
     hues=zeros(0,1);
+    CurrClassHistData=[];
     % parcours des images de la classe c
     for n=sampleIndices
         img = imread([list(n).folder '\' list(n).name]);
@@ -59,10 +60,10 @@ for c=1:nbClasses
         hues=imgHSV(:,:,1);
         figure();
         A=hues(msk==max(msk(:)));
-        histogram(A(:));
+        h=histogram(A(:));
         title(sprintf('teintes image %d : %s, classe %d : %s',n,nom{n},c,nom_classe{n}),"interpreter","none")
     end
-
+    histData{c}=CurrClassHistData;
 end
 
 
@@ -91,3 +92,6 @@ for c=1:nbClasses
     title(sprintf('classe %d : %s',c,nom_classe{n}),"interpreter","none")
 
 end
+
+%% Détection des points aberrants
+
